@@ -64,11 +64,11 @@ async function run() {
     app.put('/reply/:id', async (req, res) => {
   const { id } = req.params; 
   const support = req.body; 
-console.log(id);
+
       const result = await supportCollection.updateOne({ _id: new ObjectId(id) },
         { $set: support },
       { upsert: true });
-    console.log(result);
+    
       res.json(result);
   
 });
