@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json())
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.DB_URI
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,19 +35,49 @@ async function run() {
       const supports = await cursor.toArray()
       res.send(supports)
     })
+    app.get('/support/:id', async(req,res)=>{
+      const id = req.params.id 
+     const qurey ={_id: new ObjectId(id)}
+     const  result= await supportCollection.findOne(qurey)
+     res.send(result)
+    })
+    app.get('/mysupport/:email', async (req, res) => {
+     try {
+       const email = req.params.email; 
+       console.log(req.params);
+      console.log(email, "email");
+      
+       const result = await supportCollection.find({ "support.email": email }).toArray();
+       
+    res.send(result);
+     } catch (error) {
+      console.log(error);
+     }
+  
+});
+
    app.post('/support', async (req, res) => {
   const support = req.body;
   const result = await supportCollection.insertOne(support);
   res.send(result);
    });
-    
+    app.put('/reply/:id', async (req, res) => {
+  const { id } = req.params; 
+  const support = req.body; 
+console.log(id);
+      const result = await supportCollection.updateOne({ _id: new ObjectId(id) },
+        { $set: support },
+      { upsert: true });
+    console.log(result);
+      res.json(result);
+  
+});
+
     // user
     app.get('/admin/:email', async (req, res) => {
     const email = req.params.email;
       const user = await userCollection.findOne({ "user.email": email });
-      console.log(user);
       const isAdmin = user?.user?.role === 'admin';
-    console.log(isAdmin);
     res.send({ admin: isAdmin })
     
   })
