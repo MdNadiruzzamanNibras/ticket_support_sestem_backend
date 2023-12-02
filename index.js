@@ -13,7 +13,7 @@ app.use(express.json())
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = process.env.DB_URI
+const uri = `mongodb+srv://ticket:${process.env.DB_PASS}@cluster0.nvfsjha.mongodb.net/?retryWrites=true&w=majority`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
